@@ -7,22 +7,27 @@ import org.springframework.stereotype.Component;
 
 import tede.morgado.spring5framework.model.Author;
 import tede.morgado.spring5framework.model.Book;
+import tede.morgado.spring5framework.model.Publisher;
 import tede.morgado.spring5framework.repository.IAuthorRepository;
 import tede.morgado.spring5framework.repository.IBookRepository;
+import tede.morgado.spring5framework.repository.IPublisherRepository;
 
 @Component
 public class DataMapper
         implements ApplicationListener<ContextRefreshedEvent>
 {
 
-    private final IAuthorRepository authorRepository;
-    private final IBookRepository   bookRepository;
+    private final IAuthorRepository    authorRepository;
+    private final IBookRepository      bookRepository;
+    private final IPublisherRepository publisherRepository;
 
     @Autowired
-    public DataMapper (final IAuthorRepository authorRepository, final IBookRepository bookRepository)
+    public DataMapper (final IAuthorRepository authorRepository, final IBookRepository bookRepository,
+            final IPublisherRepository publisherRepository)
     {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
+        this.publisherRepository = publisherRepository;
     }
 
     @Override
@@ -33,8 +38,11 @@ public class DataMapper
 
     private void initData ()
     {
+        final Publisher publisher = new Publisher("Publisher Abc", "No Address");
+        this.publisherRepository.save(publisher);
+
         final Author eric = new Author("Eric", "Evans");
-        final Book   ddd  = new Book("Domain Deriven Design", "1234", "Harper Collins");
+        final Book   ddd  = new Book("Domain Deriven Design", "1234", publisher);
         eric
                 .getBooks()
                 .add(ddd);
@@ -45,7 +53,7 @@ public class DataMapper
         this.bookRepository.save(ddd);
 
         final Author rod   = new Author("Rod", "Johnson");
-        final Book   noEjb = new Book("J2EE Development without EJB", "5678", "Worx");
+        final Book   noEjb = new Book("J2EE Development without EJB", "5678", publisher);
         rod
                 .getBooks()
                 .add(noEjb);
